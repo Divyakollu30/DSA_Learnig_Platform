@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Data Structures & Algorithms Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CHAMELEON GLOW DESIGN SYSTEM */
+        :root {
+            --bg-main: #07050F;
+            --panel-bg: #110E22;
+            --border-ui: rgba(167, 139, 250, 0.12);
+            --text-primary: #F3E8FF;
+            --text-secondary: #9333EA;
+        
+            /* Contextual Neon Palette */
+            --ctx-grad-array: #3B82F6;     /* Electric Blue */
+            --ctx-grad-stack: #A855F7;     /* Deep Amethyst */
+            --ctx-grad-queue: #06B6D4;     /* Neon Cyan */
+            --ctx-grad-list: #EC4899;      /* Hot Pink */
+            --ctx-grad-tree: #10B981;      /* Toxic Green */
+            --ctx-grad-graph: #F59E0B;     /* Cyber Amber */
+
+            --color-danger: #F43F5E;
+            --color-danger-bg: rgba(244, 63, 94, 0.1);
+
+            /* Default Interactive Dynamic Accent */
+            --active-glow: var(--ctx-grad-stack);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            /* 1. Make the aura larger so it scatters wider across the screen */
+            width: 1000px;
+            height: 1000px;
+    
+            /* 2. Increase the core concentration and extend the drop-off gradient point */
+            background: radial-gradient(circle, var(--active-glow) 0%, rgba(59, 130, 246, 0.2) 40%, transparent 70%);
+    
+            /* 3. Boost opacity to make it strikingly visible against the deep black canvas */
+            opacity: 0.28; 
+    
+            top: -15%;
+            left: -10%;
+            pointer-events: none;
+            transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 0; /* Ensures it sits underneath everything securely */
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 950px;
+            animation: chromaStage 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes chromaStage {
+            from { opacity: 0; transform: scale(0.99) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #FFF, #D8B4FE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.25));
+        }
+
+        header p {
+            color: #E2E8F0;
+            opacity: 0.8;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            align-self: flex-start;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #A78BFA;
+            margin-bottom: 1.5rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--active-glow);
+            transition: border-color 0.4s ease;
+        }
+
+        .dsa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .dsa-button-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-ui);
+            border-radius: 24px;
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #E9D5FF; /* Default text color */
+            cursor: pointer;
+            aspect-ratio: 1 / 1; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 10px 25px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dsa-button-card:hover {
+            transform: translateY(-6px);
+            background: #171330;
+    /* Removed global color: #FFF so the individual colors below can take effect */
+        }
+
+        /* INDIVIDUAL TEXT COLOR CHANGES ON HOVER */
+        .card-array:hover { 
+            color: var(--ctx-grad-array); /* Electric Blue text */
+            border-color: var(--ctx-grad-array); 
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.35); 
+        }
+        .card-stack:hover { 
+            color: var(--ctx-grad-stack); /* Deep Amethyst text */
+            border-color: var(--ctx-grad-stack); 
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.35); 
+        }
+        .card-queue:hover { 
+            color: var(--ctx-grad-queue); /* Neon Cyan text */
+            border-color: var(--ctx-grad-queue); 
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.35); 
+        }
+        .card-list:hover { 
+            color: var(--ctx-grad-list); /* Hot Pink text */
+            border-color: var(--ctx-grad-list); 
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.35); 
+        }
+        .card-tree:hover { 
+            color: var(--ctx-grad-tree); /* Toxic Green text */
+            border-color: var(--ctx-grad-tree); 
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.35); 
+        }
+        .card-graph:hover { 
+            color: var(--ctx-grad-graph); /* Cyber Amber text */
+            border-color: var(--ctx-grad-graph); 
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.35); 
+        }
+        
+        
+
+        .back-action {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-ui);
+            color: #C084FC;
+            padding: 0.6rem 1.2rem;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+        }
+        .back-action:hover { 
+            background: rgba(255, 255, 255, 0.08); 
+            color: #fff; 
+            border-color: var(--active-glow);
+            box-shadow: 0 0 15px var(--active-glow);
+        }
+
+        .workspace-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .definition-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-ui);
+            border-radius: 28px;
+            padding: 2.2rem;
+            text-align: left;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .definition-panel h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #ffffff;
+        }
+
+        .definition-panel p {
+            font-size: 1.05rem;
+            color: #E2E8F0;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .control-panel {
+            background: #05040A;
+            border: 1px solid var(--border-ui);
+            border-radius: 20px;
+            padding: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            width: 100%;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-panel label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #A78BFA;
+            text-transform: uppercase;
+        }
+
+        .control-panel input {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-ui);
+            padding: 0.6rem;
+            border-radius: 10px;
+            color: #FFF;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 75px;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .control-panel input:focus { 
+            border-color: var(--active-glow); 
+            box-shadow: 0 0 12px var(--active-glow);
+        }
+
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.06);
+            color: #FFF;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .action-btn:hover { 
+            background: var(--active-glow);
+            color: #05040A;
+            box-shadow: 0 0 15px var(--active-glow);
+            font-weight: 700;
+        }
+        .action-btn.btn-danger { color: var(--color-danger); background: var(--color-danger-bg); border-color: rgba(244, 63, 94, 0.2); }
+        .action-btn.btn-danger:hover { background: var(--color-danger); color: #FFF; box-shadow: 0 0 15px var(--color-danger); }
+
+        .visual-sandbox {
+            width: 100%;
+            height: 460px;
+            background: #05040A;
+            border: 1px solid var(--border-ui);
+            border-radius: 28px;
+            position: relative;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-shadow: inset 0 4px 30px rgba(0,0,0,0.8);
+        }
+
+        .output-overlay {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: rgba(17, 14, 34, 0.85);
+            border: 1px solid var(--border-ui);
+            border-radius: 14px;
+            padding: 0.75rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #F3E8FF;
+            backdrop-filter: blur(8px);
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .v-capsule {
+            color: #05040A;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--active-glow);
+            border-radius: 18px;
+            box-shadow: 0 0 25px var(--active-glow), 0 0 10px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .v-capsule.highlight {
+            filter: brightness(1.6) saturate(1.5);
+            transform: scale(1.12);
+            box-shadow: 0 0 35px #FFF, 0 0 15px var(--active-glow);
+        }
+
+        .mode-array, .mode-queue { flex-direction: row; gap: 1rem; }
+        .mode-array .v-capsule, .mode-queue .v-capsule { width: 70px; height: 70px; font-size: 1.2rem; }
+
+        .array-unit { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .idx-lbl { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--active-glow); font-weight: 600; text-transform: uppercase; }
+
+        .mode-stack { flex-direction: column-reverse; justify-content: flex-start; gap: 0.75rem; width: 100%; }
+        .mode-stack .v-capsule { width: 340px; height: 50px; margin: 0 auto; font-size: 1.1rem; }
+
+        .mode-linkedlist { flex-direction: row; align-items: center; }
+        .ll-node-box { display: flex; align-items: center; animation: nodeSprout 0.3s ease; }
+        .ll-data { width: 75px; height: 60px; background: var(--active-glow); border-radius: 14px 0 0 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #05040A; font-weight: 800; font-family: 'JetBrains Mono', monospace; box-shadow: 0 0 20px var(--active-glow); }
+        .ll-pointer-box { width: 50px; height: 60px; background: var(--panel-bg); border-radius: 0 14px 14px 0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #FFF; font-weight: 700; border: 1px solid var(--border-ui); border-left: none; }
+        .ll-arrow-line { color: var(--active-glow); font-size: 1.5rem; margin: 0 0.5rem; filter: drop-shadow(0 0 8px var(--active-glow)); }
+
+        .svg-canvas-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .absolute-node { 
+            position: absolute; 
+            width: 55px; 
+            height: 55px;
+            min-width: 55px;  /* Prevents shrinking */
+            min-height: 55px; /* Prevents shrinking */
+            border-radius: 50% !important; /* Overrides .v-capsule */
+            aspect-ratio: 1 / 1; /* Forces 1:1 ratio always */
+            padding: 0; /* Remove padding that causes ovals */
+    
+            /* Keep existing styles */
+            transform: translate(-50%, -50%); 
+            z-index: 2; 
+            font-size: 1.1rem;
+    
+            /* Center the number perfectly */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        </style>
+
+    </head>
+<body>
+
+    <div id="page1" class="page active">
+        <header>
+            <h1>Data Structures and Algorithms</h1>
+            <p>Data structures are specialized formats for organizing, processing, and storing data, while algorithms are the step-by-step procedures used to manipulate that data efficiently.</p>
+        </header>
+        
+        <h3 class="section-title">Core Categories</h3>
+
+        <div class="dsa-grid">
+            <div class="dsa-button-card card-array" onclick="launchLab('Array', 'var(--ctx-grad-array)')">Array</div>
+            <div class="dsa-button-card card-stack" onclick="launchLab('Stack', 'var(--ctx-grad-stack)')">Stack</div>
+            <div class="dsa-button-card card-queue" onclick="launchLab('Queue', 'var(--ctx-grad-queue)')">Queue</div>
+            <div class="dsa-button-card card-list" onclick="launchLab('LinkedList', 'var(--ctx-grad-list)')">Linked List</div>
+            <div class="dsa-button-card card-tree" onclick="launchLab('Tree', 'var(--ctx-grad-tree)')">Binary Tree</div>
+            <div class="dsa-button-card card-graph" onclick="launchLab('Graph', 'var(--ctx-grad-graph)')">Graph</div>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <button class="back-action" onclick="exitLab()">← Back to Main</button>
+        
+        <div class="workspace-stack">
+            <div id="def-panel" class="definition-panel">
+                <h2 id="def-title">Structure Name</h2>
+                <p id="def-text">Loading engine architecture...</p>
+                
+                <div id="ctrl-panel" class="control-panel">
+                    <div class="input-group">
+                        <label id="val-label" for="io-slot">Val:</label>
+                        <input type="number" id="io-slot" min="0" max="99" value="24">
+                    </div>
+                    <div class="input-group" id="secondary-input-group" style="display:none;">
+                        <label id="extra-label" for="io-extra">Idx:</label>
+                        <input type="number" id="io-extra" min="0" max="9" value="0">
+                    </div>
+                    <div class="btn-container" id="dynamic-btn-dock"></div>
+                </div>
+            </div>
+
+            <div id="visual-sandbox" class="visual-sandbox"></div>
+            <div id="output-overlay" class="output-overlay"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentDSA = '';
+        let currentColor = '';
+        let dataCache = [];
+        let canvasTreeCache = [];
+        let graphVertices = [];
+        let graphEdges = [];
+
+        const p1 = document.getElementById('page1');
+        const p2 = document.getElementById('page2');
+        const sandbox = document.getElementById('visual-sandbox');
+        const overlay = document.getElementById('output-overlay');
+        const inputVal = document.getElementById('io-slot');
+        const inputExtra = document.getElementById('io-extra');
+        const extraGroup = document.getElementById('secondary-input-group');
+        const dock = document.getElementById('dynamic-btn-dock');
+        const rootRef = document.documentElement;
+
+        const definitionsRegistry = {
+            'Array': 'A contiguous linear data structure that stores elements in adjacent memory allocations. Accessible instantaneously via numeric index references.',
+            'Stack': 'A linear framework constrained by LIFO logic (Last-In, First-Out), where insertions and deletions happen from the singular designated top element.',
+            'Queue': 'An orderly sequential dynamic pipeline adhering strictly to FIFO logic (First-In, First-Out). Elements enqueue at the tail and exit from the head.',
+            'LinkedList': 'A chained modular structure where elements hold their personal data properties along with structural pointers aiming toward the succeeding node.',
+            'Tree': 'A hierarchical parent-child structure layout. Binary variants cleanly order data branches where left values sit lower and right values sit higher than parent levels.',
+            'Graph': 'An interconnected relational network made of detached structural nodes (Vertices) tied together with data bridges (Edges).'
+        };
+
+        function launchLab(dsaName, hexColor) {
+            currentDSA = dsaName;
+            currentColor = hexColor;
+            dataCache = (dsaName === 'Array') ? [20, 40, 60] : [];
+            canvasTreeCache = [];
+            graphVertices = [];
+            graphEdges = [];
+            sandbox.innerHTML = '';
+            overlay.style.display = 'none';
+
+            rootRef.style.setProperty('--active-glow', hexColor);
+            document.getElementById('def-title').innerText = dsaName;
+            document.getElementById('def-text').innerText = definitionsRegistry[dsaName];
+            document.getElementById('def-title').style.textShadow = `0 0 20px ${hexColor}`;
+            
+            buildConsoleControls();
+            p1.classList.remove('active');
+            p2.classList.add('active');
+            renderSandbox();
+        }
+
+        function exitLab() {
+            p2.classList.remove('active');
+            p1.classList.add('active');
+            rootRef.style.setProperty('--active-glow', 'var(--ctx-grad-stack)');
+        }
+
+        function buildConsoleControls() {
+            dock.innerHTML = '';
+            extraGroup.style.display = 'none';
+            document.getElementById('val-label').innerText = "Val:";
+
+            if (currentDSA === 'Array') {
+                extraGroup.style.display = 'flex';
+                document.getElementById('extra-label').innerText = "Idx:";
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="arrayInsertEnd()">Insert End</button>
+                    <button class="action-btn" onclick="arrayUpdate()">Update At Idx</button>
+                    <button class="action-btn" onclick="arraySearch()">Linear Search</button>
+                    <button class="action-btn btn-danger" onclick="arrayDeleteEnd()">Delete End</button>
+                `;
+            } else if (currentDSA === 'Stack') {
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="stackPush()">Push</button>
+                    <button class="action-btn" onclick="stackPeek()">Peek</button>
+                    <button class="action-btn btn-danger" onclick="stackPop()">Pop</button>
+                `;
+            } else if (currentDSA === 'Queue') {
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="queueEnqueue()">Enqueue (Rear)</button>
+                    <button class="action-btn" onclick="queuePeek()">Front/Peek</button>
+                    <button class="action-btn btn-danger" onclick="queueDequeue()">Dequeue (Front)</button>
+                `;
+            } else if (currentDSA === 'LinkedList') {
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="listAppend()">Append (Tail)</button>
+                    <button class="action-btn" onclick="listPrepend()">Prepend (Head)</button>
+                    <button class="action-btn btn-danger" onclick="listShift()">Shift (Delete Head)</button>
+                `;
+            } else if (currentDSA === 'Tree') {
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="treeInsert()">Insert Node</button>
+                    <button class="action-btn" onclick="runTreeTraversal('inorder')">Inorder Traversal</button>
+                    <button class="action-btn" onclick="runTreeTraversal('preorder')">Preorder Traversal</button>
+                    <button class="action-btn" onclick="runTreeTraversal('postorder')">Postorder Traversal</button>
+                    <button class="action-btn btn-danger" onclick="clearVisuals()">Wipe Tree</button>
+                `;
+            } else if (currentDSA === 'Graph') {
+                extraGroup.style.display = 'flex';
+                document.getElementById('val-label').innerText = "V1:";
+                document.getElementById('extra-label').innerText = "V2:";
+                inputVal.value = 0; inputExtra.value = 1;
+                dock.innerHTML = `
+                    <button class="action-btn" onclick="graphAddVertex()">Add Vertex</button>
+                    <button class="action-btn" onclick="graphAddEdge()">Connect V1 ↔ V2</button>
+                    <button class="action-btn" onclick="runGraphTraversal('BFS')">Run BFS</button>
+                    <button class="action-btn" onclick="runGraphTraversal('DFS')">Run DFS</button>
+                    <button class="action-btn btn-danger" onclick="clearVisuals()">Wipe Graph</button>
+                `;
+            }
+        }
+
+        function renderSandbox() {
+            if(['Tree', 'Graph'].includes(currentDSA)) return;
+            sandbox.innerHTML = '';
+            sandbox.className = `visual-sandbox mode-${currentDSA.toLowerCase()}`;
+
+            dataCache.forEach((num, index) => {
+                if (currentDSA === 'Array') {
+                    const block = document.createElement('div');
+                    block.className = 'array-unit';
+                    block.innerHTML = `<div class="v-capsule" id="node-${index}">${num}</div><span class="idx-lbl">[ ${index} ]</span>`;
+                    sandbox.appendChild(block);
+                } else if (currentDSA === 'Queue') {
+                    const block = document.createElement('div');
+                    block.className = 'array-unit';
+                    let flag = `[ ${index} ]`;
+                    if (index === 0) flag = "[ Front ]";
+                    if (index === dataCache.length - 1) flag = "[ Rear ]";
+                    if (dataCache.length === 1) flag = "[ Front & Rear ]";
+                    block.innerHTML = `<div class="v-capsule" id="node-${index}">${num}</div><span class="idx-lbl">${flag}</span>`;
+                    sandbox.appendChild(block);
+                } else if (currentDSA === 'LinkedList') {
+                    const rowItem = document.createElement('div');
+                    rowItem.className = 'll-node-box';
+                    rowItem.innerHTML = `
+                        <div class="ll-data" id="node-${index}">${num}</div>
+                        <div class="ll-pointer-box">${index === dataCache.length - 1 ? 'NULL' : 'NEXT'}</div>
+                        ${index === dataCache.length - 1 ? '' : '<span class="ll-arrow-line">→</span>'}
+                    `;
+                    sandbox.appendChild(rowItem);
+                } else {
+                    const genericUnit = document.createElement('div');
+                    genericUnit.className = 'v-capsule';
+                    genericUnit.id = `node-${index}`;
+                    genericUnit.innerText = num;
+                    sandbox.appendChild(genericUnit);
+                }
+            });
+        }
+
+        function cycleInput() {
+            if (['Tree', 'Array', 'Stack', 'Queue', 'LinkedList'].includes(currentDSA)) {
+                inputVal.value = Math.floor(Math.random() * 89) + 10;
+            }
+        }
+
+        function printLog(msg) {
+            overlay.style.display = 'block';
+            overlay.innerHTML = `&gt; ${msg}`;
+        }
+
+        function clearVisuals() {
+            sandbox.innerHTML = '';
+            canvasTreeCache = [];
+            graphVertices = [];
+            graphEdges = [];
+            dataCache = [];
+            overlay.style.display = 'none';
+        }
+
+        /* ARRAY */
+        function arrayInsertEnd() {
+            if(dataCache.length >= 8) return printLog('Max array allocation limit reached.');
+            dataCache.push(parseInt(inputVal.value));
+            renderSandbox(); cycleInput();
+        }
+        function arrayDeleteEnd() {
+            if(dataCache.length === 0) return printLog('Underflow error: Array empty.');
+            dataCache.pop(); renderSandbox();
+        }
+        function arrayUpdate() {
+            let idx = parseInt(inputExtra.value);
+            if(idx >= 0 && idx < dataCache.length) {
+                dataCache[idx] = parseInt(inputVal.value);
+                renderSandbox();
+                document.getElementById(`node-${idx}`).classList.add('highlight');
+            } else printLog('Index out of bounds.');
+        }
+        function arraySearch() {
+            let target = parseInt(inputVal.value);
+            let foundIdx = dataCache.indexOf(target);
+            renderSandbox();
+            if(foundIdx !== -1) {
+                document.getElementById(`node-${foundIdx}`).classList.add('highlight');
+                printLog(`Element discovered at index [ ${foundIdx} ]`);
+            } else printLog('Element matches no records.');
+        }
+
+        /* STACK */
+        function stackPush() {
+            if(dataCache.length >= 6) return printLog('Stack Overflow framework boundary reached.');
+            dataCache.push(parseInt(inputVal.value));
+            renderSandbox(); cycleInput();
+        }
+        function stackPop() {
+            if(dataCache.length === 0) return printLog('Stack Underflow error.');
+            dataCache.pop(); renderSandbox();
+        }
+        function stackPeek() {
+            if(dataCache.length === 0) return printLog('Stack is empty.');
+            renderSandbox();
+            document.getElementById(`node-${dataCache.length - 1}`).classList.add('highlight');
+            printLog(`Top item evaluated: ${dataCache[dataCache.length - 1]}`);
+        }
+
+        /* QUEUE */
+        function queueEnqueue() {
+            if(dataCache.length >= 8) return printLog('Queue layout capability saturated.');
+            dataCache.push(parseInt(inputVal.value));
+            renderSandbox(); cycleInput();
+        }
+        function queueDequeue() {
+            if(dataCache.length === 0) return printLog('Queue Underflow error.');
+            dataCache.shift(); renderSandbox();
+        }
+        function queuePeek() {
+            if(dataCache.length === 0) return printLog('Queue structural channel empty.');
+            renderSandbox();
+            document.getElementById('node-0').classList.add('highlight');
+            printLog(`Front item evaluated: ${dataCache[0]}`);
+        }
+
+        /* LINKED LIST */
+        function listAppend() {
+            if(dataCache.length >= 6) return printLog('Modular max linked nodes reached.');
+            dataCache.push(parseInt(inputVal.value));
+            renderSandbox(); cycleInput();
+        }
+        function listPrepend() {
+            if(dataCache.length >= 6) return printLog('Modular max linked nodes reached.');
+            dataCache.unshift(parseInt(inputVal.value));
+            renderSandbox(); cycleInput();
+        }
+        function listShift() {
+            if(dataCache.length === 0) return printLog('No structural node entities remain.');
+            dataCache.shift(); renderSandbox();
+        }
+
+        /* BINARY SEARCH TREE */
+        function treeInsert() {
+            const val = parseInt(inputVal.value);
+            if (!document.getElementById('vector-canvas')) {
+                sandbox.innerHTML = '<svg class="svg-canvas-layer" id="vector-canvas"></svg>';
+                canvasTreeCache = [];
+            }
+            let structuralized = false;
+            let depth = 0, tx = 50, ty = 50;
+
+            if (canvasTreeCache.length === 0) {
+                canvasTreeCache.push({val, x: 50, y: 50, id: 0, left: null, right: null});
+                structuralized = true;
+            } else {
+                let currIdx = 0;
+                while (!structuralized && depth < 3) {
+                    let rootNode = canvasTreeCache[currIdx];
+                    depth++;
+                    let lateralShift = 45 / Math.pow(2, depth);
+                    
+                    if (val < rootNode.val) {
+                        if (rootNode.left === null) {
+                            tx = rootNode.x - lateralShift; ty = rootNode.y + 70;
+                            let newId = canvasTreeCache.length;
+                            rootNode.left = newId;
+                            canvasTreeCache.push({val, x: tx, y: ty, id: newId, left: null, right: null, px: rootNode.x, py: rootNode.y});
+                            structuralized = true;
+                        } else currIdx = rootNode.left;
+                    } else {
+                        if (rootNode.right === null) {
+                            tx = rootNode.x + lateralShift; ty = rootNode.y + 70;
+                            let newId = canvasTreeCache.length;
+                            rootNode.right = newId;
+                            canvasTreeCache.push({val, x: tx, y: ty, id: newId, left: null, right: null, px: rootNode.x, py: rootNode.y});
+                            structuralized = true;
+                        } else currIdx = rootNode.right;
+                    }
+                }
+            }
+            if(!structuralized) printLog("Tree layout limit capped at a maximum depth of 3 layers.");
+            drawTreePaths(); cycleInput();
+        }
+
+        function drawTreePaths() {
+            sandbox.querySelectorAll('.absolute-node').forEach(n => n.remove());
+            const svg = document.getElementById('vector-canvas');
+            svg.innerHTML = '';
+            
+            canvasTreeCache.forEach(node => {
+                if(node.px !== undefined) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', `${node.px}%`); line.setAttribute('y1', `${node.py}px`);
+                    line.setAttribute('x2', `${node.x}%`); line.setAttribute('y2', `${node.y}px`);
+                    line.setAttribute('stroke', currentColor); line.setAttribute('stroke-width', '2.5');
+                    line.setAttribute('style', `filter: drop-shadow(0 0 6px ${currentColor}); opacity: 0.5;`);
+                    svg.appendChild(line);
+                }
+            });
+
+            canvasTreeCache.forEach(node => {
+                const item = document.createElement('div');
+                item.className = 'v-capsule absolute-node';
+                item.id = `tree-node-${node.id}`;
+                item.style.left = `${node.x}%`; item.style.top = `${node.y}px`;
+                item.innerText = node.val;
+                sandbox.appendChild(item);
+            });
+        }
+
+        function runTreeTraversal(type) {
+            if(canvasTreeCache.length === 0) return printLog('Tree is empty.');
+            let res = [];
+            
+            function traverse(currIdx) {
+                if (currIdx === null || !canvasTreeCache[currIdx]) return;
+                if (type === 'preorder') res.push(canvasTreeCache[currIdx].val);
+                traverse(canvasTreeCache[currIdx].left);
+                if (type === 'inorder') res.push(canvasTreeCache[currIdx].val);
+                traverse(canvasTreeCache[currIdx].right);
+                if (type === 'postorder') res.push(canvasTreeCache[currIdx].val);
+            }
+            
+            traverse(0);
+            printLog(`${type.toUpperCase()} Sequence output: [ ${res.join(' → ')} ]`);
+        }
+
+        /* GRAPH CONFIGURATIONS */
+        function graphAddVertex() {
+            if (!document.getElementById('vector-canvas')) {
+                sandbox.innerHTML = '<svg class="svg-canvas-layer" id="vector-canvas"></svg>';
+            }
+            const currentCount = graphVertices.length;
+            if(currentCount >= 7) return printLog('Maximum workspace network node limit reached.');
+
+            // Fixed random distributions to keep vertices spaced out dynamically
+            const cx = Math.random() * 60 + 20; 
+            const cy = Math.random() * 200 + 80;
+
+            graphVertices.push({ id: currentCount, x: cx, y: cy });
+
+            const node = document.createElement('div');
+            node.className = 'v-capsule absolute-node';
+            node.id = `graph-v-${currentCount}`;
+            node.style.left = `${cx}%`; 
+            node.style.top = `${cy}px`;
+            node.innerText = currentCount;
+            sandbox.appendChild(node);
+
+            // --- AUTO-UPDATE INPUT FIELDS BOXES ---
+            if (currentCount >= 1) {
+                document.getElementById('io-slot').value = currentCount - 1; // Sets V1 to second to last node
+                document.getElementById('io-extra').value = currentCount;     // Sets V2 to the newest node
+            }
+        }
+
+        function graphAddEdge() {
+            const v1 = parseInt(inputVal.value);
+            const v2 = parseInt(inputExtra.value);
+            
+            const node1 = graphVertices.find(v => v.id === v1);
+            const node2 = graphVertices.find(v => v.id === v2);
+
+            if(node1 === undefined || node2 === undefined || v1 === v2) {
+                return printLog('Error: Both distinct target vertices must exist before establishing an edge connection.');
+            }
+            
+            // Checks bidirectional existence cleanly allowing limitless dynamic routing combinations
+            if (graphEdges.some(e => (e.from === v1 && e.to === v2) || (e.from === v2 && e.to === v1))) return;
+
+            graphEdges.push({from: v1, to: v2});
+            redrawGraphLayer();
+        }
+
+        function redrawGraphLayer() {
+            const svg = document.getElementById('vector-canvas');
+            if(!svg) return;
+            svg.innerHTML = '';
+
+            graphEdges.forEach(edge => {
+                const n1 = graphVertices.find(v => v.id === edge.from);
+                const n2 = graphVertices.find(v => v.id === edge.to);
+                if(n1 && n2) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', `${n1.x}%`); line.setAttribute('y1', `${n1.y}px`);
+                    line.setAttribute('x2', `${n2.x}%`); line.setAttribute('y2', `${n2.y}px`);
+                    line.setAttribute('stroke', currentColor); line.setAttribute('stroke-width', '2.5');
+                    line.setAttribute('style', `filter: drop-shadow(0 0 5px ${currentColor}); opacity: 0.5;`);
+                    svg.appendChild(line);
+                }
+            });
+        }
+
+        function runGraphTraversal(mode) {
+            if(graphVertices.length === 0) return printLog('Graph contains no layout vertex nodes.');
+            
+            let adj = Array.from({length: graphVertices.length}, () => []);
+            graphEdges.forEach(e => {
+                if(e.from < graphVertices.length && e.to < graphVertices.length) {
+                    adj[e.from].push(e.to); adj[e.to].push(e.from);
+                }
+            });
+
+            let visited = new Array(graphVertices.length).fill(false);
+            let order = [];
+
+            if (mode === 'BFS') {
+                let queue = [0]; visited[0] = true;
+                while(queue.length > 0) {
+                    let curr = queue.shift(); order.push(curr);
+                    adj[curr].forEach(neighbor => {
+                        if(!visited[neighbor]) { visited[neighbor] = true; queue.push(neighbor); }
+                    });
+                }
+            } else { 
+                function dfs(v) {
+                    visited[v] = true; order.push(v);
+                    adj[v].forEach(n => { if(!visited[n]) dfs(n); });
+                }
+                dfs(0);
+            }
+            printLog(`${mode} Traversal Node path execution: [ ${order.join(' → ')} ]`);
+        }
+    </script>
+</body>
+</html>
